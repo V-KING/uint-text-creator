@@ -54,10 +54,13 @@ $(document).ready(function(){
 	});
 });
 
+
 function next_color(i) {
 	// loop colors
 	boxes[i] ++;
 	if (boxes[i] > color_count - 1) { boxes[i] = 0; }
+	console.log(boxes[i]);
+	console.log("color_count:"+boxes[i]);
 	
 	// set color
 	$("#box" + i).css("background-color",colors[boxes[i]]);
@@ -84,7 +87,7 @@ function form_submit() {
 	adjust_array();
 	
 	// adjust variable type (uint16_t or 8_t) accordingly
-	if(rows < 9){vartype = "uint8_t"} else {vartype = "uint16_t"};
+	if(columns < 9){vartype = "uint8_t"} else {vartype = "uint16_t"};
 	// create array of colorBox divs
     for (var i=0; i < total_dots; i++ ) {
     	$('#container').append('<div class="colorBox" id="box'+i+'"></div>');
@@ -106,22 +109,47 @@ function isNumber(evt) {
 
 function make_code() {
 	$("#code").empty();
+	// var byteOfrow = 1;
 	var charname = document.form_a.charname_box.value;
 	// first line
 	$('#code').append(vartype+ ' _' + charname +'[' + columns + '] = {');
-	
-	// DO ROW
-	for (var offset = 0; offset < columns; offset++) {
-		// DO COLUMN
-		// every line after, form: 0b0000000000000011
-		// set first part of string "0b"
+	// if(columns>8) byteOfrow = 2;
+
+    var hex="0x29";//十六进制  
+    var charValue = String.fromCharCode(hex);//生成Unicode字符  
+    var charCode = charValue.charCodeAt(0);//获取指定字符的十进制表示.  
+
+    var hexOri="0x"+charCode.toString(2);;//将int值转换为十六进制  
+    console.log(charCode);
+    console.log(hexOri);
+      
+
+	for (var i = 0; i < rows; i++ ) {
 		var bytestring = "0b";
-		for (var i = rows - 1; i >= 0; i-- ) {
-			// add numbers
+		for (var offset = 0; offset < columns; offset++) {
 			bytestring += boxes[(i*columns) + offset];
 		}
 		$('#code').append('<br>' + indent + bytestring + ';');
 	}
-	
+	$('#code').append('<br>}');
+
+	//hex	
+	$('#code').append('<br>');
+	$('#code').append('HEX value = {');
+
+	for (var i = 0; i < rows; i++ ) {
+		var bytestring = "0b";
+		for (var offset = 0; offset < columns; offset++) {
+			bytestring += boxes[(i*columns) + offset];
+		}
+		// $('#code').append('<br>' + indent + bytestring + ';');
+
+		var charValue = String.fromCharCode(bytestring);//生成Unicode字符  
+    	var charCode = charValue.charCodeAt(0);//获取指定字符的十进制表示.
+    	
+    	var hexOri="0x"+charCode.toString(16);;//将int值转换为十六进制
+
+		$('#code').append('<br>' + indent + hexOri + ';');
+	}
 	$('#code').append('<br>}');
 }
