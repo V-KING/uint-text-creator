@@ -1,2 +1,3 @@
- DOT matrix creater for soc
-match for maker101 
+DOT matrix creater for soc.
+
+Match for maker101.
